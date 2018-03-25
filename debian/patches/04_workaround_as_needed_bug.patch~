@@ -6,11 +6,9 @@ Author: Alessandro Ghedini <ghedo@debian.org>
 Reviewed-by: Alessandro Ghedini <ghedo@debian.org>
 Last-Update: 2016-08-03
 
-Index: curl/ltmain.sh
-===================================================================
---- curl.orig/ltmain.sh
-+++ curl/ltmain.sh
-@@ -7220,6 +7220,11 @@ func_mode_link ()
+--- a/ltmain.sh
++++ b/ltmain.sh
+@@ -7220,6 +7220,11 @@
  	arg=$func_stripname_result
  	;;
  
@@ -22,7 +20,7 @@ Index: curl/ltmain.sh
        -Wl,*)
  	func_stripname '-Wl,' '' "$arg"
  	args=$func_stripname_result
-@@ -7610,6 +7615,15 @@ func_mode_link ()
+@@ -7610,6 +7615,15 @@
  	lib=
  	found=false
  	case $deplib in
