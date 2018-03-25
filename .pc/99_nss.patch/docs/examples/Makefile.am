@@ -48,9 +48,9 @@ LIBS = $(BLANK_AT_MAKETIME)
 
 # Dependencies
 if USE_EXPLICIT_LIB_DEPS
-LDADD = $(LIBDIR)/libcurl-nss.la @LIBCURL_LIBS@
+LDADD = $(LIBDIR)/libcurl-gnutls.la @LIBCURL_LIBS@
 else
-LDADD = $(LIBDIR)/libcurl-nss.la
+LDADD = $(LIBDIR)/libcurl-gnutls.la
 endif
 
 # Makefile.inc provides the check_PROGRAMS and COMPLICATED_EXAMPLES defines

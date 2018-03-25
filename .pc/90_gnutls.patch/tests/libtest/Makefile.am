@@ -53,11 +53,11 @@ CFLAG_CURL_SYMBOL_HIDING = @CFLAG_CURL_SYMBOL_HIDING@
 LIBS = $(BLANK_AT_MAKETIME)
 
 if USE_EXPLICIT_LIB_DEPS
-SUPPORTFILES_LIBS = $(top_builddir)/lib/libcurl-nss.la @LIBCURL_LIBS@
-TESTUTIL_LIBS = $(top_builddir)/lib/libcurl-nss.la @LIBCURL_LIBS@
+SUPPORTFILES_LIBS = $(top_builddir)/lib/libcurl.la @LIBCURL_LIBS@
+TESTUTIL_LIBS = $(top_builddir)/lib/libcurl.la @LIBCURL_LIBS@
 else
-SUPPORTFILES_LIBS = $(top_builddir)/lib/libcurl-nss.la @CURL_NETWORK_LIBS@ @NSS_LIBS@
-TESTUTIL_LIBS = $(top_builddir)/lib/libcurl-nss.la @CURL_NETWORK_AND_TIME_LIBS@ @NSS_LIBS@
+SUPPORTFILES_LIBS = $(top_builddir)/lib/libcurl.la @CURL_NETWORK_LIBS@ @NSS_LIBS@
+TESTUTIL_LIBS = $(top_builddir)/lib/libcurl.la @CURL_NETWORK_AND_TIME_LIBS@ @NSS_LIBS@
 endif
 
 # Dependencies (may need to be overridden)
