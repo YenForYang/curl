@@ -1,3 +1,9 @@
+curl (7.59.0-34.1) UNRELEASED; urgency=medium
+
+  *Non maintainer update 
+
+ -- Richard Yang <richard@yenforyang.com>  Fri, 23 Mar 2018 12:45:47 -0500
+
 curl (7.58.0-3) experimental; urgency=medium
 
   [ Steve Langasek ]
