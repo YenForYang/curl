@@ -61,7 +61,6 @@
 #include "strdup.h"
 #include "progress.h"
 #include "easyif.h"
-#include "multiif.h"
 #include "select.h"
 #include "sendf.h" /* for failf function prototype */
 #include "connect.h" /* for Curl_getconnectinfo */
@@ -74,7 +73,6 @@
 #include "sigpipe.h"
 #include "ssh.h"
 #include "setopt.h"
-#include "http_digest.h"
 
 /* The last 3 #include files should be in this order */
 #include "curl_printf.h"
@@ -746,10 +744,6 @@ static CURLcode easy_perform(struct Curl_easy *data, bool events)
   if(!data)
     return CURLE_BAD_FUNCTION_ARGUMENT;
 
-  if(data->set.errorbuffer)
-    /* clear this as early as possible */
-    data->set.errorbuffer[0] = 0;
-
   if(data->multi) {
     failf(data, "easy handle already used in multi handle");
     return CURLE_FAILED_INIT;
@@ -765,9 +759,6 @@ static CURLcode easy_perform(struct Curl_easy *data, bool events)
       return CURLE_OUT_OF_MEMORY;
     data->multi_easy = multi;
   }
-
-  if(multi->in_callback)
-    return CURLE_RECURSIVE_API_CALL;
 
   /* Copy the MAXCONNECTS option to the multi handle */
   curl_multi_setopt(multi, CURLMOPT_MAXCONNECTS, data->set.maxconnects);
@@ -1026,7 +1017,6 @@ void curl_easy_reset(struct Curl_easy *data)
   /* zero out authentication data: */
   memset(&data->state.authhost, 0, sizeof(struct auth));
   memset(&data->state.authproxy, 0, sizeof(struct auth));
-  Curl_digest_cleanup(data);
 }
 
 /*
@@ -1038,9 +1028,6 @@ void curl_easy_reset(struct Curl_easy *data)
  * the pausing, you may get your write callback called at this point.
  *
  * Action is a bitmask consisting of CURLPAUSE_* bits in curl/curl.h
- *
- * NOTE: This is one of few API functions that are allowed to be called from
- * within a callback.
  */
 CURLcode curl_easy_pause(struct Curl_easy *data, int action)
 {
@@ -1083,8 +1070,10 @@ CURLcode curl_easy_pause(struct Curl_easy *data, int action)
       /* even if one function returns error, this loops through and frees all
          buffers */
       if(!result)
-        result = Curl_client_write(conn, writebuf[i].type, writebuf[i].buf,
-                                   writebuf[i].len);
+        result = Curl_client_chop_write(conn,
+                                        writebuf[i].type,
+                                        writebuf[i].buf,
+                                        writebuf[i].len);
       free(writebuf[i].buf);
     }
 
@@ -1102,10 +1091,6 @@ CURLcode curl_easy_pause(struct Curl_easy *data, int action)
      ((newstate&(KEEP_RECV_PAUSE|KEEP_SEND_PAUSE)) !=
       (KEEP_RECV_PAUSE|KEEP_SEND_PAUSE)) )
     Curl_expire(data, 0, EXPIRE_RUN_NOW); /* get this handle going again */
-
-  /* This transfer may have been moved in or out of the bundle, update
-     the corresponding socket callback, if used */
-  Curl_updatesocket(data);
 
   return result;
 }
@@ -1147,9 +1132,6 @@ CURLcode curl_easy_recv(struct Curl_easy *data, void *buffer, size_t buflen,
   ssize_t n1;
   struct connectdata *c;
 
-  if(Curl_is_in_callback(data))
-    return CURLE_RECURSIVE_API_CALL;
-
   result = easy_connection(data, &sfd, &c);
   if(result)
     return result;
@@ -1176,9 +1158,6 @@ CURLcode curl_easy_send(struct Curl_easy *data, const void *buffer,
   CURLcode result;
   ssize_t n1;
   struct connectdata *c = NULL;
-
-  if(Curl_is_in_callback(data))
-    return CURLE_RECURSIVE_API_CALL;
 
   result = easy_connection(data, &sfd, &c);
   if(result)

@@ -12,15 +12,13 @@
 CURLX_CFILES = \
 	../lib/strtoofft.c \
 	../lib/nonblock.c \
-	../lib/warnless.c \
-        ../lib/curl_ctype.c
+	../lib/warnless.c
 
 CURLX_HFILES = \
 	../lib/curl_setup.h \
 	../lib/strtoofft.h \
 	../lib/nonblock.h \
-	../lib/warnless.h \
-        ../lib/curl_ctype.h
+	../lib/warnless.h
 
 CURL_CFILES = \
 	slist_wc.c \
@@ -37,7 +35,6 @@ CURL_CFILES = \
 	tool_dirhie.c \
 	tool_doswin.c \
 	tool_easysrc.c \
-	tool_filetime.c \
 	tool_formparse.c \
 	tool_getparam.c \
 	tool_getpass.c \
@@ -78,7 +75,6 @@ CURL_HFILES = \
 	tool_dirhie.h \
 	tool_doswin.h \
 	tool_easysrc.h \
-	tool_filetime.h \
 	tool_formparse.h \
 	tool_getparam.h \
 	tool_getpass.h \

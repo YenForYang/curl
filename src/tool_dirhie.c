@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2018, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2016, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -41,9 +41,9 @@
 #  endif
 #endif
 
-#if defined(WIN32) || (defined(MSDOS) && !defined(__DJGPP__))
+#ifdef WIN32
 #  define mkdir(x,y) (mkdir)((x))
-#  ifndef F_OK
+#  ifndef __POCC__
 #    define F_OK 0
 #  endif
 #endif
@@ -91,7 +91,7 @@ static void show_dir_errno(FILE *errors, const char *name)
  *  should create all the dir* automagically
  */
 
-#if defined(WIN32) || defined(__DJGPP__)
+#ifdef WIN32
 /* systems that may use either or when specifying a path */
 #define PATH_DELIMITERS "\\/"
 #else

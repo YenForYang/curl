@@ -2338,11 +2338,10 @@ static CURLcode ossl_connect_step1(struct connectdata *conn, int sockindex)
 #endif
 
   if(ssl_cafile || ssl_capath) {
-    if(verifypeer) {
-      /* tell SSL where to find CA certificates that are used to verify
-         the servers certificate. */
-      if(!SSL_CTX_load_verify_locations(BACKEND->ctx,
-                                        ssl_cafile, ssl_capath)) {
+    /* tell SSL where to find CA certificates that are used to verify
+       the servers certificate. */
+    if(!SSL_CTX_load_verify_locations(BACKEND->ctx, ssl_cafile, ssl_capath)) {
+      if(verifypeer) {
         /* Fail if we insist on successfully verifying the server. */
         failf(data, "error setting certificate verify locations:\n"
               "  CAfile: %s\n  CApath: %s",
@@ -2350,18 +2349,20 @@ static CURLcode ossl_connect_step1(struct connectdata *conn, int sockindex)
               ssl_capath ? ssl_capath : "none");
         return CURLE_SSL_CACERT_BADFILE;
       }
-      else {
-        /* Everything is fine. */
-        infof(data, "successfully set certificate verify locations:\n"
-              "  CAfile: %s\n  CApath: %s\n",
-              ssl_cafile ? ssl_cafile : "none",
-              ssl_capath ? ssl_capath : "none");
-      }
+      /* Just continue with a warning if no strict  certificate verification
+         is required. */
+      infof(data, "error setting certificate verify locations,"
+            " continuing anyway:\n");
     }
     else {
-      infof(data, "ignoring certificate verify locations due to "
-            "disabled peer verification\n");
+      /* Everything is fine. */
+      infof(data, "successfully set certificate verify locations:\n");
     }
+    infof(data,
+          "  CAfile: %s\n"
+          "  CApath: %s\n",
+          ssl_cafile ? ssl_cafile : "none",
+          ssl_capath ? ssl_capath : "none");
   }
 #ifdef CURL_CA_FALLBACK
   else if(verifypeer) {
@@ -3579,15 +3580,11 @@ static CURLcode Curl_ossl_md5sum(unsigned char *tmp, /* input */
                                  unsigned char *md5sum /* output */,
                                  size_t unused)
 {
-  EVP_MD_CTX *mdctx;
-  unsigned int len = 0;
-  (void) unused;
-
-  mdctx = EVP_MD_CTX_create();
-  EVP_DigestInit_ex(mdctx, EVP_md5(), NULL);
-  EVP_DigestUpdate(mdctx, tmp, tmplen);
-  EVP_DigestFinal_ex(mdctx, md5sum, &len);
-  EVP_MD_CTX_destroy(mdctx);
+  MD5_CTX MD5pw;
+  (void)unused;
+  MD5_Init(&MD5pw);
+  MD5_Update(&MD5pw, tmp, tmplen);
+  MD5_Final(md5sum, &MD5pw);
   return CURLE_OK;
 }
 
@@ -3597,15 +3594,11 @@ static void Curl_ossl_sha256sum(const unsigned char *tmp, /* input */
                                 unsigned char *sha256sum /* output */,
                                 size_t unused)
 {
-  EVP_MD_CTX *mdctx;
-  unsigned int len = 0;
-  (void) unused;
-
-  mdctx =  EVP_MD_CTX_create();
-  EVP_DigestInit_ex(mdctx, EVP_sha256(), NULL);
-  EVP_DigestUpdate(mdctx, tmp, tmplen);
-  EVP_DigestFinal_ex(mdctx, sha256sum, &len);
-  EVP_MD_CTX_destroy(mdctx);
+  SHA256_CTX SHA256pw;
+  (void)unused;
+  SHA256_Init(&SHA256pw);
+  SHA256_Update(&SHA256pw, tmp, tmplen);
+  SHA256_Final(sha256sum, &SHA256pw);
 }
 #endif
 

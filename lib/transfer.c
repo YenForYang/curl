@@ -5,7 +5,7 @@
  *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
- * Copyright (C) 1998 - 2018, Daniel Stenberg, <daniel@haxx.se>, et al.
+ * Copyright (C) 1998 - 2017, Daniel Stenberg, <daniel@haxx.se>, et al.
  *
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
@@ -85,7 +85,7 @@
     !defined(CURL_DISABLE_IMAP)
 /*
  * checkheaders() checks the linked list of custom headers for a
- * particular header (prefix). Provide the prefix without colon!
+ * particular header (prefix).
  *
  * Returns a pointer to the first matching header or NULL if none matched.
  */
@@ -97,8 +97,7 @@ char *Curl_checkheaders(const struct connectdata *conn,
   struct Curl_easy *data = conn->data;
 
   for(head = data->set.headers; head; head = head->next) {
-    if(strncasecompare(head->data, thisheader, thislen) &&
-       Curl_headersep(head->data[thislen]) )
+    if(strncasecompare(head->data, thisheader, thislen))
       return head->data;
   }
 
@@ -136,10 +135,8 @@ CURLcode Curl_fillreadbuffer(struct connectdata *conn, int bytes, int *nreadp)
 
   /* this function returns a size_t, so we typecast to int to prevent warnings
      with picky compilers */
-  Curl_set_in_callback(data, true);
   nread = (int)data->state.fread_func(data->req.upload_fromhere, 1,
                                       buffersize, data->state.in);
-  Curl_set_in_callback(data, false);
 
   if(nread == CURL_READFUNC_ABORT) {
     failf(data, "operation aborted by callback");
@@ -305,9 +302,7 @@ CURLcode Curl_readrewind(struct connectdata *conn)
     if(data->set.seek_func) {
       int err;
 
-      Curl_set_in_callback(data, true);
       err = (data->set.seek_func)(data->set.seek_client, 0, SEEK_SET);
-      Curl_set_in_callback(data, false);
       if(err) {
         failf(data, "seek callback returned error %d", (int)err);
         return CURLE_SEND_FAIL_REWIND;
@@ -316,10 +311,8 @@ CURLcode Curl_readrewind(struct connectdata *conn)
     else if(data->set.ioctl_func) {
       curlioerr err;
 
-      Curl_set_in_callback(data, true);
       err = (data->set.ioctl_func)(data, CURLIOCMD_RESTARTREAD,
                                    data->set.ioctl_client);
-      Curl_set_in_callback(data, false);
       infof(data, "the ioctl callback returned %d\n", (int)err);
 
       if(err) {
@@ -717,7 +710,7 @@ static CURLcode readwrite_data(struct Curl_easy *data,
 #endif   /* CURL_DISABLE_HTTP */
 
       /* Account for body content stored in the header buffer */
-      if((k->badheader == HEADER_PARTHEADER) && !k->ignorebody) {
+      if(k->badheader && !k->ignorebody) {
         DEBUGF(infof(data, "Increasing bytecount by %zu from hbuflen\n",
                      k->hbuflen));
         k->bytecount += k->hbuflen;
@@ -808,15 +801,10 @@ static CURLcode readwrite_data(struct Curl_easy *data,
 
     } /* if(!header and data to read) */
 
-    if(conn->handler->readwrite && excess && !conn->bits.stream_was_rewound) {
+    if(conn->handler->readwrite &&
+       (excess > 0 && !conn->bits.stream_was_rewound)) {
       /* Parse the excess data */
       k->str += nread;
-
-      if(&k->str[excess] > &k->buf[data->set.buffer_size]) {
-        /* the excess amount was too excessive(!), make sure
-           it doesn't read out of buffer */
-        excess = &k->buf[data->set.buffer_size] - k->str;
-      }
       nread = (ssize_t)excess;
 
       result = conn->handler->readwrite(data, conn, &nread, &readmore);

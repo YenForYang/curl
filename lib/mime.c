@@ -51,6 +51,10 @@
 #endif
 
 
+#define FILE_CONTENTTYPE_DEFAULT        "application/octet-stream"
+#define MULTIPART_CONTENTTYPE_DEFAULT   "multipart/mixed"
+#define DISPOSITION_DEFAULT             "attachment"
+
 #define READ_ERROR                      ((size_t) -1)
 
 /* Encoders. */
@@ -241,7 +245,7 @@ static FILE * vmsfopenread(const char *file, const char *mode)
 static char *Curl_basename(char *path)
 {
   /* Ignore all the details above for now and make a quick and simple
-     implementation here */
+     implementaion here */
   char *s1;
   char *s2;
 
@@ -1638,7 +1642,8 @@ static CURLcode add_content_type(struct curl_slist **slp,
                               boundary? boundary: "");
 }
 
-const char *Curl_mime_contenttype(const char *filename)
+
+static const char *ContentTypeForFilename(const char *filename)
 {
   unsigned int i;
 
@@ -1710,14 +1715,14 @@ CURLcode Curl_mime_prepare_headers(curl_mimepart *part,
       contenttype = MULTIPART_CONTENTTYPE_DEFAULT;
       break;
     case MIMEKIND_FILE:
-      contenttype = Curl_mime_contenttype(part->filename);
+      contenttype = ContentTypeForFilename(part->filename);
       if(!contenttype)
-        contenttype = Curl_mime_contenttype(part->data);
+        contenttype = ContentTypeForFilename(part->data);
       if(!contenttype && part->filename)
         contenttype = FILE_CONTENTTYPE_DEFAULT;
       break;
     default:
-      contenttype = Curl_mime_contenttype(part->filename);
+      contenttype = ContentTypeForFilename(part->filename);
       break;
     }
   }

@@ -226,7 +226,7 @@ class SPNEGO_NegTokenResp:
                     raise Exception('OID tag not found %x' % next_byte)
                 decode_data2 = decode_data2[1:]
                 item, total_bytes2 = asn1decode(decode_data2)
-                self['SupportedMech'] = item
+                self['SuportedMech'] = item
 
                 decode_data = decode_data[1:]
                 decode_data = decode_data[total_bytes:]

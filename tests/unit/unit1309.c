@@ -22,7 +22,6 @@
 #include "curlcheck.h"
 
 #include "splay.h"
-#include "warnless.h"
 
 
 static CURLcode unit_setup(void)
@@ -87,8 +86,7 @@ UNITTEST_START
     key.tv_usec = (541*i)%1023;
     payload = (size_t) key.tv_usec;
 
-    /* for simplicity */
-    nodes[i].payload = CURLX_INTEGER_TO_POINTER_CAST(payload);
+    nodes[i].payload = (void *)payload; /* for simplicity */
     root = Curl_splayinsert(key, root, &nodes[i]);
   }
 
@@ -100,7 +98,7 @@ UNITTEST_START
     printf("Tree look:\n");
     splayprint(root, 0, 1);
     printf("remove pointer %d, payload %ld\n", rem,
-           CURLX_POINTER_TO_INTEGER_CAST(nodes[rem].payload));
+           (long)(nodes[rem].payload));
     rc = Curl_splayremovebyaddr(root, &nodes[rem], &root);
     if(rc) {
       /* failed! */
@@ -121,8 +119,7 @@ UNITTEST_START
     /* add some nodes with the same key */
     for(j = 0; j <= i % 3; j++) {
       size_t payload = key.tv_usec*10 + j;
-      /* for simplicity */
-      nodes[i * 3 + j].payload = CURLX_INTEGER_TO_POINTER_CAST(payload);
+      nodes[i * 3 + j].payload = (void *)payload; /* for simplicity */
       root = Curl_splayinsert(key, root, &nodes[i * 3 + j]);
     }
   }
@@ -133,9 +130,8 @@ UNITTEST_START
     tv_now.tv_usec = i;
     root = Curl_splaygetbest(tv_now, root, &removed);
     while(removed != NULL) {
-      printf("removed payload %ld[%ld]\n",
-             CURLX_POINTER_TO_INTEGER_CAST(removed->payload) / 10,
-             CURLX_POINTER_TO_INTEGER_CAST(removed->payload) % 10);
+      printf("removed payload %ld[%ld]\n", (long)(removed->payload) / 10,
+             (long)(removed->payload) % 10);
       root = Curl_splaygetbest(tv_now, root, &removed);
     }
   }

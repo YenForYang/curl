@@ -89,7 +89,7 @@ CURLcode Curl_input_negotiate(struct connectdata *conn, bool proxy,
     }
   }
 
-  /* Initialize the security context and decode our challenge */
+  /* Initilise the security context and decode our challenge */
   result = Curl_auth_decode_spnego_message(data, userp, passwdp, service,
                                            host, header, neg_ctx);
 

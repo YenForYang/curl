@@ -2772,7 +2772,6 @@ sub checksystem {
             }
            if ($libcurl =~ /winssl/i) {
                $has_winssl=1;
-               $has_sslpinning=1;
                $ssllib="WinSSL";
            }
            elsif ($libcurl =~ /openssl/i) {
@@ -3909,7 +3908,7 @@ sub singletest {
 
     if((!$cmdhash{'option'}) || ($cmdhash{'option'} !~ /no-output/)) {
         #We may slap on --output!
-        if (!@validstdout || $cmdhash{'option'} =~ /force-output/) {
+        if (!@validstdout) {
             $out=" --output $CURLOUT ";
         }
     }

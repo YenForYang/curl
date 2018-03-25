@@ -1050,7 +1050,7 @@ static bool juggle(curl_socket_t *sockfdp,
 
        Commands:
 
-       DATA - plain pass-through data
+       DATA - plain pass-thru data
     */
 
     if(!read_stdin(buffer, 5))

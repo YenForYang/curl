@@ -1460,8 +1460,7 @@ static CURLcode telnet_do(struct connectdata *conn, bool *done)
           if(n == 0)                        /* no bytes */
             break;
 
-          /* fall through with number of bytes read */
-          readfile_read = (DWORD)n;
+          readfile_read = (DWORD)n; /* fall thru with number of bytes read */
         }
         else {
           /* read from stdin */

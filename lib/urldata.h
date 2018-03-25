@@ -895,7 +895,7 @@ struct connectdata {
                                 well be the same we read from.
                                 CURL_SOCKET_BAD disables */
 
-  /** Dynamically allocated strings, MUST be freed before this **/
+  /** Dynamicly allocated strings, MUST be freed before this **/
   /** struct is killed.                                      **/
   struct dynamically_allocated_data {
     char *proxyuserpwd;
@@ -1024,8 +1024,10 @@ struct PureInfo {
   int httpcode;  /* Recent HTTP, FTP, RTSP or SMTP response code */
   int httpproxycode; /* response code from proxy when received separate */
   int httpversion; /* the http version number X.Y = X*10+Y */
-  time_t filetime; /* If requested, this is might get set. Set to -1 if the
-                      time was unretrievable. */
+  long filetime; /* If requested, this is might get set. Set to -1 if the time
+                    was unretrievable. We cannot have this of type time_t,
+                    since time_t is unsigned on several platforms such as
+                    OpenVMS. */
   bool timecond;  /* set to TRUE if the time condition didn't match, which
                      thus made the document NOT get fetched */
   long header_size;  /* size of read header(s) in bytes */
@@ -1166,7 +1168,7 @@ struct Curl_http2_dep {
 };
 
 /*
- * This struct is for holding data that was attempted to get sent to the user's
+ * This struct is for holding data that was attemped to get sent to the user's
  * callback but is held due to pausing. One instance per type (BOTH, HEADER,
  * BODY).
  */
@@ -1520,7 +1522,6 @@ struct UserDefined {
   long timeout;         /* in milliseconds, 0 means no timeout */
   long connecttimeout;  /* in milliseconds, 0 means no timeout */
   long accepttimeout;   /* in milliseconds, 0 means no timeout */
-  long happy_eyeballs_timeout; /* in milliseconds, 0 is a valid value */
   long server_response_timeout; /* in milliseconds, 0 means no timeout */
   long tftp_blksize;    /* in bytes, 0 means use default */
   bool tftp_no_options; /* do not send TFTP options requests */
@@ -1674,21 +1675,13 @@ struct UserDefined {
   bool suppress_connect_headers;  /* suppress proxy CONNECT response headers
                                      from user callbacks */
 
-  bool dns_shuffle_addresses; /* whether to shuffle addresses before use */
-
   struct Curl_easy *stream_depends_on;
   bool stream_depends_e; /* set or don't set the Exclusive bit */
   int stream_weight;
 
-  bool haproxyprotocol; /* whether to send HAProxy PROXY protocol header */
-
   struct Curl_http2_dep *stream_dependents;
 
   bool abstract_unix_socket;
-
-  curl_resolver_start_callback resolver_start; /* optional callback called
-                                                  before resolver start */
-  void *resolver_start_client; /* pointer to pass to resolver start callback */
 };
 
 struct Names {

@@ -87,7 +87,7 @@ Bailiff and Bálint Szilakszi,
 
 RPG, support for ILE/RPG on OS/400 is included in source distribution
 
-Ruby: [curb](https://github.com/taf2/curb) written by Ross Bamford
+Ruby: [curb](http://curb.rubyforge.org/) written by Ross Bamford, [ruby-curl-multi](http://curl-multi.rubyforge.org/) written by Kristjan Petursson and Keith Rarick
 
 [Rust](https://github.com/carllerche/curl-rust) curl-rust - by Carl Lerche
 
@@ -95,7 +95,7 @@ Ruby: [curb](https://github.com/taf2/curb) written by Ross Bamford
 
 [Scilab](https://help.scilab.org/docs/current/fr_FR/getURL.html) binding by Sylvestre Ledru
 
-[S-Lang](https://www.jedsoft.org/slang/modules/curl.html) by John E Davis
+[S-Lang](http://www.jedsoft.org/slang/modules/curl.html) by John E Davis
 
 [Smalltalk](http://www.squeaksource.com/CurlPlugin/) Written by Danil Osipchuk
 

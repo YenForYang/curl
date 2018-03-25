@@ -20,7 +20,7 @@
  *
  ***************************************************************************/
 /* <DESC>
- * Connection cache shared between easy handles with the share interface
+ * Connection cache shared between easy handles with the share inteface
  * </DESC>
  */
 #include <stdio.h>
